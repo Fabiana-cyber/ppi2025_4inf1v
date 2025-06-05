@@ -23,6 +23,8 @@ const text = [
   ]
 
    return (
+    <div >
+    <h1 className={styles.myTextList}> Meus Textos</h1>
       <div className={styles.container}>
       {text.map((text, index) => (
         <MyText key={index} title={`${index + 1}. ${text.title}` }>
@@ -30,5 +32,6 @@ const text = [
         </MyText>
       ))}
       </div>
+    </div>
     );
 }

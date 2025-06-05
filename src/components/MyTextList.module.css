@@ -6,12 +6,19 @@
     flex-wrap: wrap; /*nowrap wrap wrap-reverse */
     gap: 3rem;
 
+
+
     /*EIXO HOTIZONTAL - Mian Axis */
     justify-content: space-evenly; /*flex-start flex-end center space-between space-around space-evenly*/
 
     /*EIXO VERTICAL - Cross Axis */
     align-items: center; /*flex-start flex-end center baseline stretch*/
     align-content: center; /*flex-start flex-end center space-between space-around stretch*/
+
+    @media (max-width: 768px){
+        flex-flow: column nowrap;
+    }
+    
 
 
 
