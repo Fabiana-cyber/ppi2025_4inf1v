@@ -1,9 +1,4 @@
 .grid {
-  /* padding: 3rem;
-  display: grid;
-  gap: 3rem;
-  grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
-  grid-template-rows: repeat(auto-fit, min-content); */
   padding: 3rem;
   display: grid;
   gap: 3rem;
@@ -35,56 +30,78 @@
     "aside1 footer1 aside2"
     "footer2 footer2 aside2";
     
-  grid-template-columns: 0.1fr /*aside1*/ 3fr /*main*/ 0.1fr /*aside2*/ ;
-  grid-template-rows: 7rem /*header1*/  5rem /*header2*/  auto 5rem /*footer1*/ 5rem /*footer2*/ ;
+  grid-template-columns: 0.1fr /*aside1*/ auto /*main*/ 0.1fr /*aside2*/ ;
+  grid-template-rows: 7rem /*header1*/  5rem /*header2*/  auto 5rem /*footer1*/ 7rem /*footer2*/ ;
 
-  /* @media (max-width: 1200px) {
+
+ 
+   @media (max-width: 1200px) {
     grid-template-areas:
-      "header1"
-      "header2"
-      "main"
-      "footer";
+    "header1 header1 "
+    "aside1 header2 "
+    "aside1 main "
+    "aside1 footer1  "
+    "footer2 footer2 ";
 
+  grid-template-columns: 0.1fr;
+    .aside2 {
+    display: none;
+  }
+  } 
+
+ @media (max-width: 768px) {
+    grid-template-areas: 
+    "header1 "
+    "main"
+    "footer1";
     grid-template-columns: 1fr;
-
-    .aside-right {
-    display: none;
-  }
-  } */
-  /* @media (max-width: 768px) {
   .header2,
-  .footer1,
   .footer2,
-  .aside-left,
-  .aside-right {
-    display: none;
+  .aside1,
+  .aside2 {
+  display: none;
   }
-} */
+    grid-template-rows: 7rem /*header1*/ auto /*main*/ 7rem /*footer1*/;
+  }
+
 }
 
 
 
 .header1 {
   grid-area: header1;
-  background-color: darkslateblue;
+  background-color: rgb(178, 50, 22);
 }
 
 .header2 {
   grid-area: header2;
   background-color: deepskyblue;
+  @media (max-width: 1200px){
+    .header{
+      display: none;
+    }
+  }
+
 }
 
 .aside1 {
   grid-area: aside1;
   background-color: deeppink;
+  @media (max-width: 1200px){
+    aside{
+      display: none;
+    }
+  }
 }
 
 .aside2 {
   grid-area: aside2;
   background-color: deeppink;
 
-  @media (max-width: 1200px) {
-    display: none;
+  @media (max-width: 1200px){
+    aside{
+      display: none;
+    }
   }
 }
 .main {
@@ -99,20 +116,11 @@
 
 .footer2 {
   grid-area: footer2;
-  background-color: rgb(139, 61, 68);
-}
-
-/* @media (max-width: 1200px) {
-  .aside-right {
-    display: none;
+  background-color: rgb(158, 112, 116);
+  @media (max-width: 1200px){
+    footer{
+      display: none;
+    }
   }
 }
 
-@media (max-width: 768px) {
-  .header2,
-  .footer1,
-  .aside1,
-  .aside2 {
-    display: none;
-  }
-} */
