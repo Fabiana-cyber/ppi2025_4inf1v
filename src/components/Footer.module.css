@@ -1,0 +1,26 @@
+.container {
+  display: grid;
+  grid-template-areas: "footer1";
+  grid-template-rows: 10rem;
+}
+
+.footer1 {
+  grid-area: footer1;
+  background-color: rgb(92, 122, 35);
+  display: flex;
+  justify-content: space-between; /* <-- separa o nome e os ícones */
+  align-items: center;
+  color: white;
+  padding: 0 2rem; /* um espaçamento nas laterais */
+}
+
+.icons {
+  display: flex;
+  align-items: center;
+  gap: 1rem; /* espaçamento entre os dois ícones */
+}
+
+
+
+
+

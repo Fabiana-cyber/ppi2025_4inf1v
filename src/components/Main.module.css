@@ -1,0 +1,24 @@
+.main {
+  background-color: rgb(2, 22, 76);
+  padding: 3rem;
+}
+
+.grid {
+  display: grid;
+  gap: 3rem;
+  grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+}
+
+.card {
+  background-color: var(--primary-dark);
+  color: var(--primary-contrast-light);
+  padding: 1rem;
+  border-radius: 1rem;
+  box-shadow: 0.5rem 0.5rem 1rem rgba(0, 0, 0, 0.5);
+  text-align: center;
+}
+
+.image {
+  width: 32rem;
+  border-radius: 1rem;
+}
