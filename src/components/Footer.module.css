@@ -1,6 +1,63 @@
+@import url('https://fonts.googleapis.com/css2?family=Birthstone&display=swap'); 
+.grid {
+  padding: 3rem;
+  display: grid;
+  gap: 3rem;
+  grid-template-columns: repeat(auto-fit, minmax(30rem, 1fr));
+  grid-template-rows: repeat(auto-fit, min-content); 
+}
+
+
 .container {
   display: grid;
-  grid-template-areas: "footer1";
+  grid-template-areas:
+    "footer";
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  background-color: rgb(130, 137, 168);
+}
+  
+.footer {
+  padding-top: auto;
+  display: flex;
+  justify-content: space-around; /* separates the name and icons */
+  align-items: center;
+  grid-area: footer;
+
+}
+
+.inf {
+  color: rgb(0, 0, 0);
+}
+
+.myName {
+  color: rgb(45, 42, 152);
+  font-size: 2rem;
+  font-family: "Birthstone", cursive;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.icons {
+  display: flex;
+  align-items: center;
+  gap: 1rem; /* spacing between the two icons */
+  order: 999999999;
+  background-color: rgb(33, 41, 77);
+  border-radius: 1rem;
+  padding: 0.5rem;
+}
+
+  
+
+
+
+
+
+/* .container {
+  display: grid;
+  grid-template-areas: 
+  "footer1";
   grid-template-rows: 10rem;
 }
 
@@ -8,17 +65,17 @@
   grid-area: footer1;
   background-color: rgb(92, 122, 35);
   display: flex;
-  justify-content: space-between; /* <-- separa o nome e os ícones */
-  align-items: center;
+  justify-content: space-between; /*  separa o nome e os ícones */
+  /* align-items: center;
   color: white;
   padding: 0 2rem; /* um espaçamento nas laterais */
-}
+/* }
 
 .icons {
   display: flex;
   align-items: center;
   gap: 1rem; /* espaçamento entre os dois ícones */
-}
+ 
 
 
 

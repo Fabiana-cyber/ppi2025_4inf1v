@@ -1,17 +1,32 @@
-.container {
-  display: grid;
-  grid-template-areas:
-    "header1";
-  grid-template-rows: 10rem;
-  background-color: var(--primary);
-}
-
 .header1 {
   grid-area: header1;
-  background-color: rgb(2, 7, 65);
+  background-color: rgb(2, 12, 61);
+  display: flex;
+  justify-content: center;
+  height: 30rem;
+  min-width: 100vw;
+}
+
+.header1 img {
+  width: 7rem;
+  height: auto;
+}
+
+
+.text {
   color: var(--primary-contrast-dark);
+  font-size: 3rem;
+  text-align: center;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 0 2rem;
+  justify-content: center;
+  gap: 1.5rem
 }
+
+ @media (max-width: 720px) {
+  .text {
+    display: flex;
+    flex-direction: column;
+    font-size: 2rem;
+  }
+ }

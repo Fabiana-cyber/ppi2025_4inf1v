@@ -47,7 +47,7 @@
     .aside2 {
     display: none;
   }
-  } 
+  }  
 
  @media (max-width: 768px) {
     grid-template-areas: 
