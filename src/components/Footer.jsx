@@ -5,7 +5,7 @@ export function Footer() {
   return (
     <footer className={styles.container}>
       <div className={styles.footer}>
-       <div >  <p className='inf'> IFRN - Campus Macau</p>
+       <div className={styles.textBlock}>  <p className='inf'> IFRN - Campus Macau</p>
         <p className='inf'>Curso Técnico em Infórmatica</p>
         <p className='inf'>Programação para a Internet 2025</p></div>
         <div className={styles.icons}>
@@ -29,18 +29,3 @@ export function Footer() {
 
 
 
-// import { Github, Linkedin } from 'lucide-react';
-
-// export function Footer() {
-//   return (
-//     <footer className={styles.container}>
-//       <div className={styles.footer1}>
-//         <p>Fabiana Cunha Rodrigues</p>
-//         <div className={styles.icons}>
-//           <Github />
-//           <Linkedin />
-//         </div>
-//       </div>
-//     </footer>
-//   )
-// }
