@@ -1,0 +1,28 @@
+.container {
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: start;
+  gap: 2rem;
+  background-color: var(--primary);
+  height: 100vh;
+  font-size: 3rem;
+}
+
+
+.button {
+  background-color: var(--primary-contrast-light);
+  color: var(--primary-contrast-dark);
+  border: none;
+  padding: 1rem 2rem;
+  font-size: 2rem;
+  cursor: pointer;
+  border-radius: 0.5rem;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.button:hover {
+    background-color: var(--primary-contrast-dark);
+    transform: scale(1.05);
+}
