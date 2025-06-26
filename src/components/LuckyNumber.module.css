@@ -26,3 +26,16 @@
     background-color: var(--primary-contrast-dark);
     transform: scale(1.05);
 }
+
+.message {
+  font-size: 2rem;
+  color: rgb(98, 0, 255);
+  text-align: center;
+}
+
+.buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+}
