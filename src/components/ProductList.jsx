@@ -1,56 +1,56 @@
-import { useEffect, useState } from "react";   
-import Styles from "./ProductList.module.css";
-import { circularProgressClasses } from "@mui/material";
+import { useEffect, useState } from "react";
+import styles from "./ProductList.module.css";
+import { CircularProgress } from "@mui/material";
+import { Product } from "./Product";
 
-export function ProductList() {
+export function ProductList({ addToCart }) {
+  const category = "smartphones";
+  const limit = 10;
+  const apiUrl = `https://dummyjson.com/products/category/${category}?limit=${limit}&select=id,thumbnail,title,price,description`;
 
-var category = "smartphones";
-var limit = 10;
-var apiUrl =`https://dummyjson.com/products/category/${category}?limit=${limit}&select=id,thumbnail,title,price,description`;
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-const [products, setProducts] = React.useState([]);
-const [loading, setLoading] = React.useState(true);
-const [error, setError] = React.useState(null);
-
-useEffect(() => {
+  useEffect(() => {
     async function fetchProducts() {
       try {
-        const response = fetch(apiUrl); 
-        const data = response.json();
+        const response = await fetch(apiUrl);
+        const data = await response.json();
         setProducts(data.products);
       } catch (error) {
         setError(error);
-      }
-      finally {
+      } finally {
         setLoading(false);
       }
     }
 
-  fetchProducts();
-
-}, []);
+    fetchProducts();
+  }, []);
 
   return (
-    <div className={Styles.container}>
-         <h1>TJA megastore</h1>
-         {products.map((product) => (
-            <div key={product.id} className={Styles.product}>
-              <img 
-               src={product.thumbnail} 
-               alt={product.title} 
-               className={Styles.productImage} 
-               />
-                <h2 className={Styles.productTitle}>{product.title}</h2>
-                <p className={Styles.productDescription}>{product.description}</p>
-                <p className={Styles.productPrice}>${product.price}</p>
+    <div className={styles.container}>
+      <h1>TJA Megastore</h1>
+
+      <div className={styles.grid}>
+        {products.map((product) => (
+          <Product key={product.id} product={product} addToCart={addToCart} />
+        ))}
+      </div>
+
+      {loading && (
+        <div>
+          <CircularProgress
+            thickness={5}
+            style={{ margin: "2rem auto", display: "block" }}
+            sx={{ color: "#001111" }}
+          />
+          <p>Loading products...</p>
+        </div>
+      )}
+
+      {error && <p>Error loading products: {error.message} ❌</p>}
     </div>
-            ))}
-            {loading && (
-                circularProgress
-                thickness={5}
-                <styLe></styLe>
-            )
-    </div>  
   );
 }
 
