@@ -39,11 +39,11 @@ export function ProductList({ addToCart }) {
       </div>
 
       {loading && (
-        <div>
+        <div className={styles.loading}>
           <CircularProgress
             thickness={5}
             style={{ margin: "2rem auto", display: "block" }}
-            sx={{ color: "#001111" }}
+            sx={{ color: "#016d6dff" }}
           />
           <p>Loading products...</p>
         </div>
@@ -53,5 +53,3 @@ export function ProductList({ addToCart }) {
     </div>
   );
 }
-
-   

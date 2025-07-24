@@ -11,7 +11,7 @@ export function Product({ product, addToCart }) {
       <h2>{product.title}</h2>
       <p>{product.description}</p>
       <p>${product.price}</p>
-      {/* Aqui é o botão do Passo 2 */}
+      {}
       <button
         onClick={() => addToCart(product)}
         className={styles.productButton} 
