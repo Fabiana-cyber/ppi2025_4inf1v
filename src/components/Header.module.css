@@ -3,14 +3,22 @@
   align-items: center;
   justify-content: space-between;
   gap: 3rem;
+  height: 15rem;
   padding: 5rem;
-  background-color:var(--primary-dark);
-  color:rgb(23, 146, 195)
+  background-color: blue;
+
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
 }
+
 .container h1 {
   font-size: 5rem;
   font-weight: bolder;
 }
+
 .containerImg img {
   height: auto;
   width: 100%;
@@ -19,8 +27,8 @@
 
 .cartInfo {
   border-radius: 3rem;
-  background-color: var(--primary-contrast-light);
-  color: var(--primary-contrast-dark);
+  background-color: rgb(43, 163, 184);
+  color: rgb(17, 37, 186);
   padding: 2rem;
   font-size: 3rem;
   font-weight: bold;
@@ -29,7 +37,7 @@
 
 .link {
   text-decoration: none;
-  color: blue;
+  color: rgb(31, 8, 117);
 }
 
 
