@@ -1,9 +1,9 @@
 :root {
-  --primary: #f49097;
-  --primary-light: #fcd6da;
-  --primary-dark: #030452;
-  --primary-contrast-light: #7c7ca6;
-  --primary-contrast-dark: #062f82;
-  
-
+ --primary: #2f8bd6dc;               /* azul royal */
+--primary-contrast-dark: #2667c9; /* azul escuro */
+--primary-contrast-light: #21588b; /* azul claro */
+--secondary: #5d82be;             /* azul médio */
+--secondary-contrast: #e6f0fa;    /* azul bem clarinho */
+--primary-dark: #2b73c0;        /* azul escuro */
+--primary-light: #b3cce6;      /* azul bem clarinho */
 }
