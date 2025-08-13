@@ -1,38 +1,52 @@
 import styles from "./ProductList.module.css";
 import { CircularProgress } from "@mui/material";
 import { Product } from "./Product";
-import { useContext, useRef } from "react";
+import { useContext, useRef, useState } from "react";
 import { CartContext } from "../service/CartContext";
 
 export function ProductList() {
-  
   const { products, loading, error } = useContext(CartContext);
 
-  const searchInput =  useRef(null);
+  // Estado para o termo de busca
+  const [searchTerm, setSearchTerm] = useState("");
 
-  function handleSearch() {
-    const query = searchInput.current.value.toLowerCase();
-    console.log("Search query:", query);
+  // Atualiza o termo de busca
+  function handleSearch(e) {
+    setSearchTerm(e.target.value.toLowerCase());
   }
 
-  function handleClear(){
-    searchInput.current.value = "";
+  // Limpa o campo e o termo
+  function handleClear() {
+    setSearchTerm("");
   }
+
+  // Filtra os produtos conforme o termo
+  const filteredProducts = products.filter((product) =>
+    product.title.toLowerCase().includes(searchTerm)
+  );
+
   return (
     <div className={styles.container}>
       <div className={styles.searchContainer}>
         <input
           type="text"
           placeholder="Search products..."
-          ref={searchInput}
+          value={searchTerm}
           onChange={handleSearch}
         />
         <button onClick={handleClear}>Clear</button>
-      <div className={styles.productList}>
-        {products.map((product) => (
-          <Product key={product.id} product={product} />
-        ))}
       </div>
+
+      <div className={styles.productList}>
+        {filteredProducts.length > 0 ? (
+          filteredProducts.map((product) => (
+            <Product key={product.id} product={product} />
+          ))
+        ) : (
+          <p>No products found.</p>
+        )}
+      </div>
+
       {loading && (
         <div>
           <CircularProgress
@@ -43,10 +57,8 @@ export function ProductList() {
           <p>Loading products...</p>
         </div>
       )}
+
       {error && <p>Error loading products: {error.message} ❌</p>}
     </div>
   );
-  </div>
-  );
 }
-import { useEffect, useState } from "react"

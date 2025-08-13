@@ -52,9 +52,11 @@ export function CartProvider({ children }) {
 
   function updateQtyCart(productId, quantity) {
     setCart((prevCart) =>
-      prevCart.map((item) =>
-        item.id === productId ? { ...item, quantity: quantity } : item
-      )
+      quantity > 0
+        ? prevCart.map((item) =>
+            item.id === productId ? { ...item, quantity: quantity } : item
+          )
+        : prevCart.filter((item) => item.id !== productId)
     );
   }
 
@@ -76,5 +78,4 @@ export function CartProvider({ children }) {
     <CartContext.Provider value={context}>{children}</CartContext.Provider>
   );
 }
-    
-  
+
