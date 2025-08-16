@@ -1,0 +1,147 @@
+.container {
+  width: 50rem;
+  max-width: 90%;
+  margin: 0 auto;
+  padding: 2rem 2rem 4rem 2rem; 
+  padding-top: 18rem; 
+  border: 0.1rem solid #ccc;
+  border-radius: 1rem;
+  background-color: #25bacb;
+  max-height: calc(100vh - 6rem); 
+  overflow-y: auto; 
+  box-sizing: border-box;
+}
+
+
+.titulo {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem; 
+}
+
+
+.label {
+  display: flex;
+  flex-direction: column;
+  font-size: 1.2rem;
+  gap: 0.5rem;
+}
+
+
+.input,
+.textarea {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  border: 0.1rem solid #aaa;
+  border-radius: 0.5rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.textarea {
+  resize: vertical;
+  min-height: 5rem;
+}
+
+
+.botao {
+  padding: 0.8rem 1.5rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 0.5rem;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s; 
+}
+
+.botao:hover {
+  background-color: #0056b3;
+}
+
+
+@media (max-width: 720px) {
+  .productCard {
+    padding: 1rem;
+    border-radius: 2rem;
+    max-width: 98vw;
+  }
+
+  .productImage {
+    width: 100%;
+    border-radius: 0.5rem;
+  }
+
+  .productTitle {
+    font-size: 1.8rem;
+  }
+
+  .productDescription {
+    font-size: 1.2rem;
+  }
+
+  .productPrice {
+    font-size: 1.3rem;
+    margin: 1rem 0;
+  }
+
+  .productButton,
+  .updateButton,
+  .deleteButton {
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+    width: 100%;
+  }
+
+  .productButtonsContainer {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .modalContent {
+    min-width: 200px;
+    padding: 1rem;
+  }
+}
+
+
+@media (min-width: 721px) and (max-width: 1024px) {
+  .productCard {
+    padding: 1.5rem;
+    border-radius: 3rem;
+    max-width: 80vw;
+  }
+
+  .productTitle {
+    font-size: 2.3rem;
+  }
+
+  .productDescription {
+    font-size: 1.6rem;
+  }
+
+  .productPrice {
+    font-size: 1.7rem;
+    margin: 1.5rem 0;
+  }
+
+  .productButton,
+  .updateButton,
+  .deleteButton {
+    font-size: 1.2rem;
+    padding: 0.5rem 1.5rem;
+  }
+
+  .modalContent {
+    min-width: 250px;
+    padding: 1.5rem;
+  }
+}
+

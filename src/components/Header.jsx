@@ -1,6 +1,6 @@
 import styles from "./Header.module.css";
 import { ShoppingBasket } from "lucide-react";
-import { Link } from "react-router-dom"; // lembre de corrigir aqui
+import { Link } from "react-router"; 
 import { useContext } from "react";
 import { CartContext } from "../service/CartContext";
 
@@ -12,6 +12,9 @@ export function Header() {
 
   return (
     <div className={styles.container}>
+      <Link to="/login" className={`${styles.link} ${styles.loginButton}`}>
+      <p>Fazer Login </p>
+      </Link>
       <Link to="/" className={styles.link}>
         <h1>TJA Megastore</h1>
       </Link>

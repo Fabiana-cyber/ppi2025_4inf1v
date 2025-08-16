@@ -1,32 +1,44 @@
 import styles from "./ProductList.module.css";
 import { CircularProgress } from "@mui/material";
 import { Product } from "./Product";
-import { useContext, useRef, useState } from "react";
+import { useContext, useState } from "react";
 import { CartContext } from "../service/CartContext";
+import { useNavigate } from "react-router-dom"; // Import do navigate
 
 export function ProductList() {
   const { products, loading, error } = useContext(CartContext);
-
-  // Estado para o termo de busca
   const [searchTerm, setSearchTerm] = useState("");
+  const navigate = useNavigate(); // Hook para navegação
 
-  // Atualiza o termo de busca
+  // Atualiza 
   function handleSearch(e) {
     setSearchTerm(e.target.value.toLowerCase());
   }
 
-  // Limpa o campo e o termo
+  // Limpa o campo 
   function handleClear() {
     setSearchTerm("");
   }
 
-  // Filtra os produtos conforme o termo
+  // Filtra os produtos 
   const filteredProducts = products.filter((product) =>
     product.title.toLowerCase().includes(searchTerm)
   );
 
   return (
     <div className={styles.container}>
+
+      
+      <div className={styles.addProductContainer}>
+        <button
+          className={styles.botaoAdicionarProduto}
+          onClick={() => navigate("/inserir-prod")}
+        >
+          Adicionar Produto +
+        </button>
+      </div>
+
+
       <div className={styles.searchContainer}>
         <input
           type="text"
@@ -37,6 +49,7 @@ export function ProductList() {
         <button onClick={handleClear}>Clear</button>
       </div>
 
+      
       <div className={styles.productList}>
         {filteredProducts.length > 0 ? (
           filteredProducts.map((product) => (
@@ -47,6 +60,7 @@ export function ProductList() {
         )}
       </div>
 
+  
       {loading && (
         <div>
           <CircularProgress
@@ -58,6 +72,7 @@ export function ProductList() {
         </div>
       )}
 
+      {/* Error */}
       {error && <p>Error loading products: {error.message} ❌</p>}
     </div>
   );

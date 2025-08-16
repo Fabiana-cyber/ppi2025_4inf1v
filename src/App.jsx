@@ -1,4 +1,3 @@
-
 import "./styles/theme.css";
 import "./styles/global.css";
 import { ProductList } from "./components/ProductList";
@@ -7,6 +6,11 @@ import { useState } from "react";
 import { Route, Routes } from "react-router";
 import { Cart } from "./components/Cart";
 import { CartProvider } from "./service/CartContext";
+import { LoginUsuario } from "./components/LoginUsuario";
+import { CadastroUsuario } from "./components/CadastroUsuario";
+import InserirProd from "./components/InserirProd";
+import AtualizarProduto from "./components/AtualizarProduto";
+ 
 
 
 export default function App() {
@@ -19,6 +23,10 @@ export default function App() {
         <Routes>
           <Route path="/" element={<ProductList />} />
           <Route path="/cart" element={<Cart />} />
+          <Route path="/login" element={<LoginUsuario />} />
+          <Route path="/inserir-prod" element={<InserirProd />} />
+          <Route path="/cadastro" element={<CadastroUsuario />} />
+          <Route path="/atualizar-produto/:id" element={<AtualizarProduto />} />
         </Routes>
       </CartProvider>
     </>

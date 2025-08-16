@@ -49,5 +49,25 @@
   background: var(--primary-700, #1976d2);
 }
 
+.addProductContainer {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1.5rem;
+}
+
+.botaoAdicionarProduto {
+  padding: 2rem 1.5rem;
+  font-size: 2rem;
+  border-radius: 0.5rem;
+  border: none;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.botaoAdicionarProduto:hover {
+  background-color: #0056b3;
+}
 
 
