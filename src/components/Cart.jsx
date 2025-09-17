@@ -2,6 +2,7 @@ import styles from "./Cart.module.css";
 import { useContext } from "react";
 import { CartContext } from "../service/CartContext";
 
+
 export function Cart() {
   const { cart, updateQtyCart, clearCart } = useContext(CartContext);
 

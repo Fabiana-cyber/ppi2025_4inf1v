@@ -2,7 +2,7 @@ import styles from "./ProductList.module.css";
 import { CircularProgress } from "@mui/material";
 import { Product } from "./Product";
 import { useContext, useState } from "react";
-import { CartContext } from "../service/CartContext";
+import { CartContext } from "../context/CartContext";
 import { useNavigate } from "react-router-dom"; // Import do navigate
 
 export function ProductList() {
@@ -73,7 +73,7 @@ export function ProductList() {
       )}
 
       {/* Error */}
-      {error && <p>Error loading products: {error.message} ❌</p>}
+      {error && <p> ❌  {error} </p>}
     </div>
   );
 }

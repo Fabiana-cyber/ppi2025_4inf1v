@@ -10,7 +10,7 @@ import { LoginUsuario } from "./components/LoginUsuario";
 import { CadastroUsuario } from "./components/CadastroUsuario";
 import InserirProd from "./components/InserirProd";
 import AtualizarProduto from "./components/AtualizarProduto";
- 
+import { CartProvider } from "./service/CartContext";
 
 
 export default function App() {
