@@ -2,21 +2,20 @@ import { useState } from "react";
 import styles from "./LuckyNumber.module.css";
 
 export function LuckyNumber() {
+  //REACT HOOK - useState()
   const [luckyNumber, setLuckyNumber] = useState(0);
-  const [sortedNumbers, setSortedNumbers] = useState([]);
+  const [array, setArray] = useState([]);
   const [message, setMessage] = useState("");
 
   function handleClick() {
-    // setLuckyNumber(Math.ceil(Math.random() * 31));
-    // console.log("Lucky Number is now: ", luckyNumber);
+    var n = Math.ceil(Math.random() * 31);
+    setLuckyNumber(n);
 
-    const number = Math.ceil(Math.random() * 31); 
-    setLuckyNumber(number);
-    if (sortedNumbers.includes(number)) {
-      setMessage("O Número " + number + " já foi sorteado!");
+    if (array.includes(n)) {
+      setMessage(`The number ${n} is already picked!`);
     } else {
-      setSortedNumbers([...sortedNumbers, number]);
       setMessage("");
+      setArray([...array, n]);
     }
   }
 
@@ -27,28 +26,28 @@ export function LuckyNumber() {
       ) : (
         <h1>Lucky Number 🎲</h1>
       )}
-    <div className={styles.buttons}>
-      <button className={styles.button} onClick={handleClick}>
-        I´m feeling lucky today!
-      </button>
-
-      <button className={styles.button} onClick={() => {
-        setLuckyNumber(0);
-        setSortedNumbers([]);
-        setMessage("");
-        }}>
-            RESET🔄
-      </button>
-    </div>
-
-      {message && <p className={styles.message}>{message}</p>}
-      {sortedNumbers.length > 0 && (
+      <div className={styles.buttons}>
+        <button className={styles.button} onClick={handleClick}>
+          I'm feeling lucky today!
+        </button>
+        <button
+          className={styles.button}
+          onClick={() => {
+            setLuckyNumber(0);
+            setArray([]);
+            setMessage("");
+          }}
+        >
+          RESET 🔄
+        </button>
+      </div>
+      {message && <p>{message}</p>}
+      {array.length > 0 && (
         <div>
-          <h3> Lucky Numbers Array:</h3>
-          <p>[{sortedNumbers.toString()}]</p>
+          <h3>Lucky Numbers Array:</h3>
+          <p>[{array.toString()}]</p>
         </div>
       )}
-      
     </div>
   );
 }

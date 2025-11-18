@@ -1,66 +1,57 @@
 import styles from "./ProductList.module.css";
 import { CircularProgress } from "@mui/material";
 import { Product } from "./Product";
-import { useContext, useState } from "react";
+import { useState, useContext, useEffect, useRef } from "react";
 import { CartContext } from "../context/CartContext";
-import { useNavigate } from "react-router-dom"; // Import do navigate
 
 export function ProductList() {
+  
   const { products, loading, error } = useContext(CartContext);
-  const [searchTerm, setSearchTerm] = useState("");
-  const navigate = useNavigate(); // Hook para navegação
 
-  // Atualiza 
-  function handleSearch(e) {
-    setSearchTerm(e.target.value.toLowerCase());
+  const [filteredProducts, setFilteredProducts] = useState([]);
+
+  const searchInput = useRef(null);
+
+  useEffect(() => {
+    if(products) {
+      setFilteredProducts(products);
+    }
+  }, [products]);
+
+  function handleSearch() {
+    const query = searchInput.current.value.toLowerCase();
+    setFilteredProducts(
+      products.filter((product) =>
+        product.title.toLowerCase().includes(query) || 
+        product.description.toLowerCase().includes(query)
+      )
+    );
   }
 
-  // Limpa o campo 
   function handleClear() {
-    setSearchTerm("");
+    searchInput.current.value = "";
+    setFilteredProducts(products);
   }
-
-  // Filtra os produtos 
-  const filteredProducts = products.filter((product) =>
-    product.title.toLowerCase().includes(searchTerm)
-  );
 
   return (
     <div className={styles.container}>
-
-      
-      <div className={styles.addProductContainer}>
-        <button
-          className={styles.botaoAdicionarProduto}
-          onClick={() => navigate("/inserir-prod")}
-        >
-          Adicionar Produto +
-        </button>
-      </div>
-
-
       <div className={styles.searchContainer}>
         <input
+          ref={searchInput}
           type="text"
           placeholder="Search products..."
-          value={searchTerm}
+          className={styles.searchInput}
           onChange={handleSearch}
         />
-        <button onClick={handleClear}>Clear</button>
+        <button className={styles.searchButton} onClick={handleClear}>
+          CLEAR
+        </button>
       </div>
-
-      
       <div className={styles.productList}>
-        {filteredProducts.length > 0 ? (
-          filteredProducts.map((product) => (
-            <Product key={product.id} product={product} />
-          ))
-        ) : (
-          <p>No products found.</p>
-        )}
+        {filteredProducts.map((product) => (
+          <Product key={product.id} product={product} />
+        ))}
       </div>
-
-  
       {loading && (
         <div>
           <CircularProgress
@@ -71,9 +62,7 @@ export function ProductList() {
           <p>Loading products...</p>
         </div>
       )}
-
-      {/* Error */}
-      {error && <p> ❌  {error} </p>}
+      {error && <p>❌ {error}</p>}
     </div>
   );
 }

@@ -1,46 +1,63 @@
 import styles from "./Header.module.css";
 import { ShoppingBasket } from "lucide-react";
-import { Link } from "react-router"; 
+import { Link } from "react-router";
 import { useContext } from "react";
-import { CartContext } from "../service/CartContext";
+import { CartContext } from "../context/CartContext";
+import { ThemeToggle } from "./ThemeToggle";
 
 export function Header() {
-  const { cart } = useContext(CartContext);
-
-  // Soma os itens no carrinho
-  const totalItems = cart.reduce((sum, product) => sum + product.quantity, 0);
+  const { cart, session } = useContext(CartContext);
 
   return (
     <div className={styles.container}>
-      <Link to="/login" className={`${styles.link} ${styles.loginButton}`}>
-      <p>Fazer Login </p>
-      </Link>
-      <Link to="/" className={styles.link}>
-        <h1>TJA Megastore</h1>
-      </Link>
+      <div>
+        <Link to="/" className={styles.link}>
+          <h1>TJA Megastore</h1>
+        </Link>
+        {session && (
+          <Link to="/user" className={styles.welcomeMessage}>
+            Welcome, {session.user.user_metadata.username} {session.user.user_metadata.admin && '⭐'}
+          </Link>
+        )}
+      </div>
 
-      <Link to="/cart" className={styles.link} style={{ position: "relative" }}>
-        <div className={styles.cartInfo}>
-          <ShoppingBasket size={32} />
+      <div className={styles.actions}>
+        {!session && (
+          <>
+            <Link to="/signin" className={styles.link}>
+              Sign In
+            </Link>
+            <Link to="/register" className={styles.link}>
+              Register
+            </Link>
+          </>
+        )}
+        <ThemeToggle />
+        <Link to="/cart" className={styles.link}>
+          <div className={styles.cartInfo}>
+            <div className={styles.cartIcon}>
+              <ShoppingBasket size={32} />
+              {cart.length > 0 && (
+                <span className={styles.cartCount}>
+                  {cart.reduce((total, item) => total + item.quantity, 0)}
+                </span>
+              )}
+            </div>
 
-          {totalItems > 0 && (
-            <span className={styles.cartBadge}>{totalItems}</span>
-          )}
-
-          <p>
-            Total: ${" "}
-            {cart
-              .reduce(
-                (total, product) => total + product.price * product.quantity,
-                0
-              )
-              .toFixed(2)}
-          </p>
-        </div>
-      </Link>
+            <p>
+              Total: ${" "}
+              {cart
+                .reduce(
+                  (total, product) => total + product.price * product.quantity,
+                  0
+                )
+                .toFixed(2)}
+            </p>
+          </div>
+        </Link>
+      </div>
     </div>
   );
 }
-
 
 
