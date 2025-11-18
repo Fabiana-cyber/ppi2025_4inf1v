@@ -8,12 +8,13 @@ import { CartProvider } from "./context/CartContext";
 import { Login } from "./components/Login";
 import { ToastContainer } from "react-toastify";
 import { User } from "./components/User";
+// import "react-toastify/dist/ReactToastify.css";
 
 export default function App() {
 
   return (
     <>
-      <ToastContainer />
+      {/* <ToastContainer /> */}
       <CartProvider>
         <Header />
         <Routes>
