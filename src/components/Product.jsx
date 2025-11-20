@@ -1,7 +1,6 @@
 import styles from "./Product.module.css";
 import { useContext } from "react";
 import { CartContext } from "../context/CartContext";
-import { Link } from "react-router";
 
 export function Product({ product }) {
   const { addToCart } = useContext(CartContext);
@@ -9,9 +8,13 @@ export function Product({ product }) {
   return (
     <div key={product.id} className={styles.productCard}>
       <img
-        src={product.thumbnail}
+        src={product.thumbnail || "/Octocat.png"}
         alt={product.title}
         className={styles.productImage}
+        loading="lazy"
+        onError={(e) => {
+          e.currentTarget.src = "/Octocat.png";
+        }}
       />
       <h2 className={styles.productTitle}>{product.title}</h2>
       <p className={styles.productDescription}>{product.description}</p>

@@ -14,7 +14,7 @@ export default function App() {
 
   return (
     <>
-      {/* <ToastContainer /> */}
+     <ToastContainer />
       <CartProvider>
         <Header />
         <Routes>

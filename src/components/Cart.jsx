@@ -16,7 +16,14 @@ export function Cart() {
         <ul>
           {cart.map((product, index) => (
             <li key={index} className={styles.cartItem}>
-              <img src={product.thumbnail} alt={product.title} />
+              <img
+                src={product.thumbnail || "/Octocat.png"}
+                alt={product.title}
+                loading="lazy"
+                onError={(e) => {
+                  e.currentTarget.src = "/Octocat.png";
+                }}
+              />
               <h3>{product.title}</h3>
               <p>${product.price.toFixed(2)}</p>
               <div className={styles.quantityControls}>
