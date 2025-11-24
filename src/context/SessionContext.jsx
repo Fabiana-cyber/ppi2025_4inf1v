@@ -1,97 +1,69 @@
-import { createContext, useState, useEffect } from "react";
-import { supabase } from "../utils/supabase";
+import { createContext, useContext, useEffect, useState } from "react";
+import { supabase } from "../utils/supabase.js";
 
-export const SessionContext = createContext({
-  session: null,
-  loading: false,
-  message: null,
-  error: null,
-  handleSignUp: () => {},
-  handleSignIn: () => {},
-  handleSignOut: () => {},
-});
+export const SessionContext = createContext();
 
 export function SessionProvider({ children }) {
   const [session, setSession] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState(null);
-  const [error, setError] = useState(null);
+  const [user, setUser] = useState(null);
+  const [loadingSession, setLoadingSession] = useState(true);
 
   useEffect(() => {
-    const initSession = async () => {
-      const { data } = await supabase.auth.getSession();
-      setSession(data.session);
-    };
-    initSession();
-
-    const { subscription } = supabase.auth.onAuthStateChange((_event, sess) => {
-      setSession(sess);
+    supabase.auth.getSession().then(({ data }) => {
+      setSession(data?.session || null);
+      setUser(data?.session?.user || null);
+      setLoadingSession(false);
     });
 
-    return () => subscription.unsubscribe();
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session || null);
+      setUser(session?.user || null);
+    });
+
+    return () => {
+      listener.subscription?.unsubscribe();
+    };
   }, []);
 
-  async function handleSignUp(email, password, username) {
-    setLoading(true);
-    setMessage(null);
-    setError(null);
-    try {
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: { username, admin: false },
-          emailRedirectTo: `${window.location.origin}/signin`,
-        },
-      });
-      if (error) throw error;
-      setMessage("Registro criado! Verifique seu e-mail para confirmar.");
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  }
+  const register = async (email, password) => {
+    const { error } = await supabase.auth.signUp({ email, password });
+    return error;
+  };
 
-  async function handleSignIn(email, password) {
-    setLoading(true);
-    setMessage(null);
-    setError(null);
-    try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-      if (error) throw error;
-      setSession(data.session);
-      setMessage("Login realizado com sucesso!");
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  }
+  const login = async (email, password) => {
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    return error;
+  };
 
-  async function handleSignOut() {
-    setLoading(true);
-    setMessage(null);
-    setError(null);
-    try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
-      setSession(null);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  }
+  const logout = async () => {
+    await supabase.auth.signOut();
+  };
+
+  // Adiciona aliases para compatibilidade com componentes existentes
+  const handleSignIn = async (email, password) => await login(email, password);
+  const handleSignUp = async (email, password) => await register(email, password);
 
   return (
     <SessionContext.Provider
-      value={{ session, loading, message, error, handleSignUp, handleSignIn, handleSignOut }}
+      value={{
+        session,
+        user,
+        login,
+        register,
+        logout,
+        loading: loadingSession,
+        // aliases / compat
+        handleSignIn,
+        handleSignUp,
+        message: null,
+        error: null,
+      }}
     >
       {children}
     </SessionContext.Provider>
   );
+}
+
+export function useSession() {
+  return useContext(SessionContext);
 }

@@ -1,28 +1,34 @@
-import { useState, useContext } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import styles from "./AtualizarProduto.module.css";
-import { CartContext } from "../service/CartContext";
+import { supabase } from "../utils/supabase";
 
 const AtualizarProduto = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { products, updateProduct } = useContext(CartContext);
+  const [produto, setProduto] = useState(null);
+  const [nome, setNome] = useState("");
+  const [preco, setPreco] = useState("");
+  const [descricao, setDescricao] = useState("");
 
-  const produto = products.find((p) => String(p.id) === String(id));
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      const { data } = await supabase.from("product").select("*").eq("id", id).single();
+      if (!mounted) return;
+      if (data) {
+        setProduto(data);
+        setNome(data.title || "");
+        setPreco(data.price || "");
+        setDescricao(data.description || "");
+      }
+    })();
+    return () => (mounted = false);
+  }, [id]);
 
-
-  const [nome, setNome] = useState(produto?.title || "");
-  const [preco, setPreco] = useState(produto?.price || "");
-  const [descricao, setDescricao] = useState(produto?.description || "");
-
-  const handleAtualizar = (e) => {
+  const handleAtualizar = async (e) => {
     e.preventDefault();
-    updateProduct({
-      ...produto,
-      title: nome,
-      price: Number(preco),
-      description: descricao,
-    });
+    await supabase.from("product").update({ title: nome, price: Number(preco), description: descricao }).eq("id", id);
     alert("Produto atualizado com sucesso!");
     navigate("/");
   };

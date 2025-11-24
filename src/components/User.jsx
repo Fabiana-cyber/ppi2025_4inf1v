@@ -1,14 +1,13 @@
-import { useContext } from "react";
 import styles from "./User.module.css";
-import { CartContext } from "../context/CartContext";
+import { useSession } from "../context/SessionContext";
 
 export function User() {
-  const { session, handleSignOut } = useContext(CartContext);
+  const { session, logout } = useSession();
   return (
     <div>
       {session ? (
         <div className={styles.container}>
-          {session.user.user_metadata.admin ? (
+          {session.user.user_metadata?.admin ? (
             <h1>Admin Account</h1>
           ) : (
             <h1>User Account</h1>
@@ -16,7 +15,7 @@ export function User() {
           <div className={styles.userInfo}>
             <p>
               <strong>Username: </strong>
-              {session.user.user_metadata.username}
+              {session.user.user_metadata?.username}
             </p>
             <p>
               <strong>Email: </strong>
@@ -27,7 +26,7 @@ export function User() {
               {session.user.id}
             </p>
           </div>
-          <button className={styles.button} onClick={handleSignOut}>
+          <button className={styles.button} onClick={logout}>
             SIGN OUT
           </button>
         </div>

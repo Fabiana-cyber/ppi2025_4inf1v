@@ -1,11 +1,9 @@
 import styles from "./Cart.module.css";
-import { useContext } from "react";
-import { CartContext } from "../context/CartContext";
+import { useCart } from "../context/CartContext";
 import { Trash } from "lucide-react";
 
 export function Cart() {
-  const { cart, updateQtyCart, removeFromCart, clearCart } =
-    useContext(CartContext);
+  const { cart, updateQtyCart, removeFromCart, clearCart } = useCart();
 
   return (
     <div className={styles.cart}>

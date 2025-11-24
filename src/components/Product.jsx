@@ -1,9 +1,8 @@
 import styles from "./Product.module.css";
-import { useContext } from "react";
-import { CartContext } from "../context/CartContext";
+import { useCart } from "../context/CartContext";
 
 export function Product({ product }) {
-  const { addToCart } = useContext(CartContext);
+  const { addToCart } = useCart();
 
   return (
     <div key={product.id} className={styles.productCard}>

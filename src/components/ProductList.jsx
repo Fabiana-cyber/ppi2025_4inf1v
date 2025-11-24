@@ -1,12 +1,11 @@
 import styles from "./ProductList.module.css";
 import { CircularProgress } from "@mui/material";
 import { Product } from "./Product";
-import { useState, useContext, useEffect, useRef } from "react";
-import { CartContext } from "../context/CartContext";
+import { useState, useEffect, useRef } from "react";
+import { useCart } from "../context/CartContext";
 
 export function ProductList() {
-  
-  const { products, loading, error } = useContext(CartContext);
+  const { products, loading, error } = useCart();
 
   const [filteredProducts, setFilteredProducts] = useState([]);
 
