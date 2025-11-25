@@ -1,15 +1,16 @@
 import styles from "./Header.module.css";
 import { ShoppingBasket } from "lucide-react";
 import { Link } from "react-router";
+import { useLocation } from "react-router-dom";
 import { ThemeToggle } from "./ThemeToggle";
 
-// IMPORTA OS HOOKS CORRETOS
 import { useCart } from "../context/CartContext";
 import { useSession } from "../context/SessionContext";
 
 export function Header() {
-  const { cart } = useCart();      // Agora vem do CartContext
-  const { session } = useSession(); // Agora vem do SessionContext
+  const { cart } = useCart();    
+  const { session } = useSession(); 
+  const location = useLocation();
 
   return (
     <div className={styles.container}>
@@ -27,7 +28,7 @@ export function Header() {
       </div>
 
       <div className={styles.actions}>
-        {!session && (
+        {!session && location.pathname !== "/reader" && (
           <>
             <Link to="/login" className={styles.link}>
               Sign In

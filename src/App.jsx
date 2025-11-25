@@ -8,6 +8,7 @@ import { Header } from "./components/Header";
 import { Cart } from "./components/Cart";
 import { Login } from "./components/Login";
 import { CadastroUsuario } from "./components/CadastroUsuario";
+import Reader from "./components/Reader";
 import { User } from "./components/User";
 import AdminProducts from "./components/Admin";
 import { ToastContainer } from "react-toastify";
@@ -24,6 +25,7 @@ function App() {
           <Route path="/login" element={<Login value="signin" />} />
           <Route path="/register" element={<Login value="register" />} />
           <Route path="/cadastro" element={<CadastroUsuario />} />
+          <Route path="/reader" element={<Reader />} />
           <Route path="/user" element={<User />} />
           <Route path="/admin" element={<AdminProducts />} />
         </Routes>

@@ -2,161 +2,223 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { supabase } from "../utils/supabase";
 import { useSession } from "./SessionContext";
 
+
 export const CartContext = createContext();
+
 
 export function CartProvider({ children }) {
   const LOCAL_KEY = "cart_local";
   const { session, user } = useSession();
-  const [cart, setCart] = useState([]); // array of product objects with `quantity`
+
+
+  // --- 1. Inicialização Lazy (Lê do LocalStorage apenas na montagem) ---
+  const [cart, setCart] = useState(() => {
+    if (typeof window === "undefined") return [];
+    try {
+      const local = localStorage.getItem(LOCAL_KEY);
+      return local ? JSON.parse(local) : [];
+    } catch {
+      return [];
+    }
+  });
+
+
   const [cartLoading, setCartLoading] = useState(false);
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState([]); // Catálogo de produtos (opcional aqui)
   const [loadingProducts, setLoadingProducts] = useState(true);
   const [productsError, setProductsError] = useState(null);
 
-  // Load cart from localStorage initially
-  useEffect(() => {
-    const local = localStorage.getItem(LOCAL_KEY);
-    if (local) {
-      try {
-        setCart(JSON.parse(local));
-      } catch (e) {
-        setCart([]);
-      }
-    }
-  }, []);
 
-  // Whenever cart changes and user is not authenticated, persist to localStorage
-  useEffect(() => {
-    if (!session) {
-      localStorage.setItem(LOCAL_KEY, JSON.stringify(cart));
+  // --- Helper: Salvar no LocalStorage ---
+  const saveToLocal = (items) => {
+    try {
+      localStorage.setItem(LOCAL_KEY, JSON.stringify(items));
+    } catch (e) {
+      console.error("Erro ao salvar localmente", e);
     }
-  }, [cart, session]);
+  };
 
-  // When session becomes available, sync local cart to Supabase and fetch server cart
+
+  // --- 2. EFEITO DE SINCRONIZAÇÃO (Merge Guest -> User) ---
   useEffect(() => {
-    if (session && user) {
-      (async () => {
-        setCartLoading(true);
-        // Merge local cart into supabase
-        const local = localStorage.getItem(LOCAL_KEY);
-        if (local) {
-          try {
-            const localItems = JSON.parse(local);
-            for (const it of localItems) {
-              const { error: upsertError } = await supabase.from("cart").upsert({
-                user_id: user.id,
-                product_id: it.id,
-                quantity: it.quantity,
-              }, { onConflict: ["user_id","product_id"] });
-              if (upsertError) console.error("Upsert error:", upsertError.message);
-            }
-            localStorage.removeItem(LOCAL_KEY);
-          } catch (e) {
-            console.error("Error parsing local cart:", e);
+    // Se não tem usuário, mantém o estado local atual e não faz nada de rede
+    if (!user) return;
+
+
+    let mounted = true;
+
+
+    (async () => {
+      setCartLoading(true);
+      
+      // A. Verificar itens "órfãos" no LocalStorage para subir (Merge)
+      const localString = localStorage.getItem(LOCAL_KEY);
+      if (localString) {
+        try {
+          const localItems = JSON.parse(localString);
+          
+          if (localItems.length > 0) {
+            // OTIMIZAÇÃO: Prepara array para Bulk Upsert (tudo de uma vez)
+            const itemsToUpsert = localItems.map(item => ({
+              user_id: user.id,
+              product_id: item.id,
+              quantity: item.quantity
+            }));
+
+
+            // Envia tudo em uma única requisição
+            const { error: upsertError } = await supabase
+              .from("cart")
+              .upsert(itemsToUpsert, { onConflict: ["user_id", "product_id"] });
+            
+            if (upsertError) console.error("Erro no merge do carrinho:", upsertError);
           }
+          
+          // Limpa o local storage apenas após tentar subir
+          localStorage.removeItem(LOCAL_KEY);
+        } catch (e) {
+          console.error("Erro ao sincronizar carrinho local:", e);
         }
+      }
 
-        // Fetch cart from Supabase with product details
-        const { data, error } = await supabase
-          .from("cart")
-          .select("id,product_id,quantity,product(*)")
-          .eq("user_id", user.id);
 
+      // B. Baixar a "Verdade Absoluta" do Supabase
+      const { data, error } = await supabase
+        .from("cart")
+        .select(`
+            id,
+            product_id,
+            quantity,
+            product ( * )
+        `)
+        .eq("user_id", user.id);
+
+
+      if (mounted) {
         if (!error && data) {
-          const formatted = data.map((row) => ({
-            id: row.product.id,
-            title: row.product.title,
-            price: row.product.price,
-            thumbnail: row.product.thumbnail,
-            quantity: row.quantity,
-            _cart_row_id: row.id,
-          }));
+          const formatted = data.map((row) => {
+            // Proteção contra produto deletado no banco
+            if (!row.product) return null;
+            return {
+              ...row.product,        // Espalha dados do produto (title, price, img)
+              quantity: row.quantity,// Usa a quantidade da tabela 'cart'
+              _cart_row_id: row.id,  // ID da linha no carrinho (se precisar deletar por ID)
+            };
+          }).filter(Boolean);
+
+
           setCart(formatted);
         }
         setCartLoading(false);
-      })();
-    }
-  }, [session, user]);
+      }
+    })();
+
+
+    return () => { mounted = false; };
+  }, [user]); // Roda quando o usuário loga
+
+
+
+
+  // --- 3. FUNÇÕES DE AÇÃO (CRUD) ---
+
 
   async function addToCart(product) {
-    const existing = cart.find((p) => p.id === product.id);
-    if (existing) {
-      return updateQtyCart(product.id, existing.quantity + 1);
+    // 3.1. Cálculo Otimista (Atualiza UI imediatamente)
+    let newCart = [];
+    const existingItem = cart.find(item => item.id === product.id);
+    
+    if (existingItem) {
+      newCart = cart.map(item => 
+        item.id === product.id 
+        ? { ...item, quantity: item.quantity + 1 }
+        : item
+      );
+    } else {
+      newCart = [...cart, { ...product, quantity: 1 }];
     }
 
-    const newItem = { ...product, quantity: 1 };
-    setCart((prev) => [...prev, newItem]);
 
-    if (session && user) {
-      const { data, error } = await supabase
-        .from("cart")
-        .upsert({ user_id: user.id, product_id: product.id, quantity: 1 }, { onConflict: ["user_id","product_id"] })
-        .select();
-      if (error) console.error("Error adding to supabase cart:", error.message);
-      else if (data && data[0]) {
-        // optionally update cart row id mapping
-      }
+    setCart(newCart);
+
+
+    // 3.2. Persistência (DB ou Local)
+    if (user) {
+      const newQty = existingItem ? existingItem.quantity + 1 : 1;
+      await supabase.from("cart").upsert(
+        { user_id: user.id, product_id: product.id, quantity: newQty }, 
+        { onConflict: ["user_id", "product_id"] }
+      );
+    } else {
+      saveToLocal(newCart);
     }
   }
+
 
   async function updateQtyCart(productId, quantity) {
     if (quantity <= 0) return removeFromCart(productId);
 
-    setCart((prev) =>
-      prev.map((item) => (item.id === productId ? { ...item, quantity } : item))
-    );
 
-    if (session && user) {
-      const { error } = await supabase
-        .from("cart")
-        .upsert({ user_id: user.id, product_id: productId, quantity }, { onConflict: ["user_id","product_id"] });
-      if (error) console.error("Error updating supabase cart qty:", error.message);
+    const newCart = cart.map((item) => (item.id === productId ? { ...item, quantity } : item));
+    setCart(newCart);
+
+
+    if (user) {
+      await supabase.from("cart").upsert(
+          { user_id: user.id, product_id: productId, quantity }, 
+          { onConflict: ["user_id", "product_id"] }
+      );
+    } else {
+      saveToLocal(newCart);
     }
   }
 
-  async function removeFromCart(productId) {
-    setCart((prev) => prev.filter((item) => item.id !== productId));
 
-    if (session && user) {
-      const { error } = await supabase
+  async function removeFromCart(productId) {
+    const newCart = cart.filter((item) => item.id !== productId);
+    setCart(newCart);
+
+
+    if (user) {
+      await supabase
         .from("cart")
         .delete()
         .eq("user_id", user.id)
         .eq("product_id", productId);
-      if (error) console.error("Error removing from supabase cart:", error.message);
+    } else {
+      saveToLocal(newCart);
     }
   }
 
+
   async function clearCart() {
     setCart([]);
-    if (session && user) {
-      const { error } = await supabase.from("cart").delete().eq("user_id", user.id);
-      if (error) console.error("Error clearing supabase cart:", error.message);
+    if (user) {
+      await supabase.from("cart").delete().eq("user_id", user.id);
     } else {
       localStorage.removeItem(LOCAL_KEY);
     }
   }
 
-  // Fetch products for product listing
+
+  // --- 4. CARREGAR PRODUTOS (Exemplo básico) ---
   useEffect(() => {
     let mounted = true;
     (async () => {
       setLoadingProducts(true);
       const { data, error } = await supabase.from("product").select("*");
       if (!mounted) return;
+      
       if (error) {
         setProductsError(error.message);
-        setProducts([]);
       } else {
         setProducts(data || []);
-        setProductsError(null);
       }
       setLoadingProducts(false);
     })();
-    return () => {
-      mounted = false;
-    };
+    return () => { mounted = false; };
   }, []);
+
 
   return (
     <CartContext.Provider
@@ -167,9 +229,10 @@ export function CartProvider({ children }) {
         updateQtyCart,
         removeFromCart,
         clearCart,
+        // Dados de produtos (opcional se você busca isso em outro lugar)
         products,
-        loading: loadingProducts,
-        error: productsError,
+        loadingProducts,
+        productsError,
       }}
     >
       {children}
@@ -177,9 +240,14 @@ export function CartProvider({ children }) {
   );
 }
 
+
 export function useCart() {
   return useContext(CartContext);
 }
+
+
+
+
 
 
 

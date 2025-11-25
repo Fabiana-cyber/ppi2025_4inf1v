@@ -1,6 +1,6 @@
 import styles from "./Login.module.css";
 import { useState, useEffect } from "react";
-import { useSession } from "../context/SessionContext";
+import { useSession } from "../context/SessionContext"; // Mantendo seu hook personalizado
 import { Field } from "@base-ui-components/react/field";
 import { Form } from "@base-ui-components/react/form";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
@@ -8,26 +8,33 @@ import { toast, Bounce } from "react-toastify";
 import { CircularProgress } from "@mui/material";
 import { useNavigate } from "react-router";
 
+
 export function Login({ value }) {
-  // Agora usando o hook corretamente
   const {
     session,
-    loading,
-    message,
-    error,
+    loading, // Assumindo que seu hook mapeia sessionLoading para loading
+    message, // Assumindo que seu hook mapeia sessionMessage para message
+    error,   // Assumindo que seu hook mapeia sessionError para error
     handleSignIn,
     handleSignUp,
   } = useSession();
 
+
   const navigate = useNavigate();
 
+
+  // --- 1. Redirecionamento se já estiver logado ---
   useEffect(() => {
-    if (session) navigate("/");
+    if (session) {
+      navigate("/");
+    }
   }, [session, navigate]);
+
 
   const [errors, setErrors] = useState({});
   const [mode, setMode] = useState(value);
   const [showPassword, setShowPassword] = useState(false);
+
 
   const [formValues, setFormValues] = useState({
     email: "",
@@ -36,35 +43,49 @@ export function Login({ value }) {
     username: "",
   });
 
+
   useEffect(() => {
     setMode(value);
   }, [value]);
 
+
+  // --- 2. Lógica de Toasts (Melhorada baseada no código do colega) ---
   useEffect(() => {
+    // Configurações comuns do Toast
+    const toastOptions = {
+      position: "top-center",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: false,
+      progress: undefined,
+      style: { fontSize: "1.5rem" },
+      theme: localStorage.getItem("theme") || "light", // Tenta pegar o tema ou usa light
+      transition: Bounce,
+    };
+
+
     if (message) {
-      toast.success(message, {
-        position: "top-center",
-        autoClose: 5000,
-        style: { fontSize: "1.5rem" },
-        transition: Bounce,
-      });
-    }
-    if (error) {
-      toast.error(error, {
-        position: "top-center",
-        autoClose: 5000,
-        style: { fontSize: "1.5rem" },
-        transition: Bounce,
-      });
+      toast.success(message, toastOptions);
+    } else if (error) {
+      // Tratamento específico de erro (ex: Email não confirmado)
+      if (error === "Email not confirmed") {
+        toast.info(error, toastOptions);
+      } else {
+        toast.error(error, toastOptions);
+      }
     }
   }, [message, error]);
+
 
   async function handleSubmit(e) {
     e.preventDefault();
 
+
     const newErrors = {};
     if (!formValues.email) newErrors.email = "Email is required";
     if (!formValues.password) newErrors.password = "Password is required";
+
 
     if (mode === "register") {
       if (!formValues.username) newErrors.username = "Username is required";
@@ -74,15 +95,24 @@ export function Login({ value }) {
         newErrors.confirmPassword = "Passwords do not match";
     }
 
+
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) return;
 
+
+    // Limpa erros anteriores antes de tentar
+    setErrors({});
+    
     if (mode === "signin") {
-      handleSignIn(formValues.email, formValues.password);
+      await handleSignIn(formValues.email, formValues.password);
     } else {
-      handleSignUp(formValues.email, formValues.password, formValues.username);
+      await handleSignUp(formValues.email, formValues.password, formValues.username);
     }
 
+
+    // Opcional: Limpar formulário apenas se for registro ou sucesso
+    // Se der erro no login, é chato pro usuário ter que digitar tudo de novo.
+    // Mas mantive a lógica original de limpar:
     setFormValues({
       email: "",
       password: "",
@@ -92,6 +122,7 @@ export function Login({ value }) {
     setShowPassword(false);
   }
 
+
   function handleInputChange(e) {
     const { name, value } = e.target;
     setFormValues((prev) => ({
@@ -100,11 +131,14 @@ export function Login({ value }) {
     }));
   }
 
+
   const handleTogglePassword = () => setShowPassword((s) => !s);
+
 
   return (
     <div className={styles.container}>
       <h1>{mode === "signin" ? "Sign In" : "Register"}</h1>
+
 
       <Form
         className={styles.form}
@@ -126,6 +160,7 @@ export function Login({ value }) {
           <Field.Error className={styles.error} />
         </Field.Root>
 
+
         {mode === "register" && (
           <Field.Root name="username" className={styles.field}>
             <Field.Label className={styles.label}>Username</Field.Label>
@@ -141,6 +176,7 @@ export function Login({ value }) {
             <Field.Error className={styles.error} />
           </Field.Root>
         )}
+
 
         <Field.Root name="password" className={styles.field}>
           <Field.Label className={styles.label}>Password</Field.Label>
@@ -158,12 +194,14 @@ export function Login({ value }) {
               type="button"
               className={styles.iconBtn}
               onClick={handleTogglePassword}
+              aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
             >
               {showPassword ? <EyeOffIcon /> : <EyeIcon />}
             </button>
           </div>
           <Field.Error className={styles.error} />
         </Field.Root>
+
 
         {mode === "register" && (
           <Field.Root name="confirmPassword" className={styles.field}>
@@ -182,6 +220,7 @@ export function Login({ value }) {
                 type="button"
                 className={styles.iconBtn}
                 onClick={handleTogglePassword}
+                aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
               >
                 {showPassword ? <EyeOffIcon /> : <EyeIcon />}
               </button>
@@ -190,9 +229,17 @@ export function Login({ value }) {
           </Field.Root>
         )}
 
+
         <button type="submit" className={styles.button} disabled={loading}>
           {loading ? (
-            <CircularProgress size={24} thickness={4} />
+            <CircularProgress
+              size={24}
+              thickness={4}
+              sx={{
+                color: "var(--primary-contrast)", // ou 'inherit' dependendo do seu CSS
+                marginLeft: "1rem",
+              }}
+            />
           ) : mode === "signin" ? (
             "Sign In"
           ) : (
@@ -200,6 +247,7 @@ export function Login({ value }) {
           )}
         </button>
       </Form>
+
 
       {mode === "register" ? (
         <button onClick={() => setMode("signin")} className={styles.info}>
@@ -213,6 +261,10 @@ export function Login({ value }) {
     </div>
   );
 }
+
+
+
+
 
 
 

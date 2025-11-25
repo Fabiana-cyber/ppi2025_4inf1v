@@ -1,0 +1,17 @@
+.reader {
+  padding: 4rem;
+  text-align: center;
+}
+
+.subtitle {
+  font-size: 1.8rem;
+  color: var(--primary-contrast-dark);
+}
+
+.info {
+  margin-top: 2rem;
+  background: var(--gray-100);
+  padding: 2rem;
+  border-radius: 0.5rem;
+  display: inline-block;
+}

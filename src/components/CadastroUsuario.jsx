@@ -4,30 +4,48 @@ import { Link, useNavigate } from "react-router-dom";
 import styles from "./CadastroUsuario.module.css";
 
 export function CadastroUsuario() {
-  const { handleSignUp, loading, message, error } = useContext(SessionContext);
+  const { handleSignUp, handleSignIn, loading, message, error } = useContext(SessionContext);
 
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   const navigate = useNavigate();
 
   async function handleSubmit(e) {
     e.preventDefault();
-
-    if (!username || !email || !password) {
+    if (!username || !email || !password || !confirmPassword) {
       alert("Preencha todos os campos!");
       return;
     }
 
-    await handleSignUp(email, password, username);
+    if (password !== confirmPassword) {
+      alert("As senhas não coincidem!");
+      return;
+    }
 
-    // Se não houve erro, redireciona para sign-in
-    if (!error) {
+    const result = await handleSignUp(email, password, username);
+
+    if (result && result.error) {
+      
+      return;
+    }
+
+    
+    const loginRes = await handleSignIn(email, password);
+    if (loginRes && loginRes.error) {
+      
       setTimeout(() => {
         navigate("/signin");
       }, 1000);
+      return;
     }
+
+    // sucesso
+    setTimeout(() => {
+      navigate("/reader");
+    }, 500);
   }
 
   return (
@@ -57,6 +75,14 @@ export function CadastroUsuario() {
           placeholder="********"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+        />
+
+        <label>Confirmar senha:</label>
+        <input
+          type="password"
+          placeholder="********"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
         />
 
         <button type="submit" disabled={loading} className={styles.button}>

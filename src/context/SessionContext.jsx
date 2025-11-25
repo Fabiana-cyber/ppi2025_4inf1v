@@ -7,6 +7,9 @@ export function SessionProvider({ children }) {
   const [session, setSession] = useState(null);
   const [user, setUser] = useState(null);
   const [loadingSession, setLoadingSession] = useState(true);
+  const [message, setMessage] = useState(null);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -25,23 +28,64 @@ export function SessionProvider({ children }) {
     };
   }, []);
 
-  const register = async (email, password) => {
-    const { error } = await supabase.auth.signUp({ email, password });
-    return error;
+  const register = async (email, password, username) => {
+    setLoading(true);
+    setMessage(null);
+    setError(null);
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            username: username || null,
+            admin: false,
+          },
+        },
+      });
+
+      if (error) {
+        setError(error.message || String(error));
+        return { error };
+      }
+
+      setMessage('Registro realizado! Verifique seu e-mail para confirmar.');
+      return { data };
+    } catch (err) {
+      setError(err.message || String(err));
+      return { error: err };
+    } finally {
+      setLoading(false);
+    }
   };
 
   const login = async (email, password) => {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    return error;
+    setLoading(true);
+    setMessage(null);
+    setError(null);
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) {
+        setError(error.message || String(error));
+        return { error };
+      }
+      setSession(data.session || null);
+      setMessage('Login realizado!');
+      return { data };
+    } catch (err) {
+      setError(err.message || String(err));
+      return { error: err };
+    } finally {
+      setLoading(false);
+    }
   };
 
   const logout = async () => {
     await supabase.auth.signOut();
   };
 
-  // Adiciona aliases para compatibilidade com componentes existentes
   const handleSignIn = async (email, password) => await login(email, password);
-  const handleSignUp = async (email, password) => await register(email, password);
+  const handleSignUp = async (email, password, username) => await register(email, password, username);
 
   return (
     <SessionContext.Provider
@@ -51,12 +95,12 @@ export function SessionProvider({ children }) {
         login,
         register,
         logout,
-        loading: loadingSession,
+        loading: loading || loadingSession,
         // aliases / compat
         handleSignIn,
         handleSignUp,
-        message: null,
-        error: null,
+        message,
+        error,
       }}
     >
       {children}
