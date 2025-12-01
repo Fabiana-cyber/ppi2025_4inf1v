@@ -1,108 +1,133 @@
-import { createContext, useContext, useEffect, useState } from "react";
-import { supabase } from "../utils/supabase.js";
+import { useState, useEffect, createContext, useContext } from "react";
+import { supabase } from "../utils/supabase";
 
-export const SessionContext = createContext();
+export const SessionContext = createContext({
+  
+  session: null,
+  sessionLoading: false,
+  sessionMessage: null,
+  sessionError: null,
+  handleSignUp: () => {},
+  handleSignIn: () => {},
+  handleSignOut: () => {},
+});
 
 export function SessionProvider({ children }) {
+ 
   const [session, setSession] = useState(null);
-  const [user, setUser] = useState(null);
-  const [loadingSession, setLoadingSession] = useState(true);
-  const [message, setMessage] = useState(null);
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [sessionLoading, setSessionLoading] = useState(false);
+  const [sessionMessage, setSessionMessage] = useState(null);
+  const [sessionError, setSessionError] = useState(null);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      setSession(data?.session || null);
-      setUser(data?.session?.user || null);
-      setLoadingSession(false);
-    });
-
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+    async function getSession() {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       setSession(session || null);
-      setUser(session?.user || null);
+      setSessionLoading(false);
+    }
+
+    getSession();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      setSession(session || null);
     });
 
-    return () => {
-      listener.subscription?.unsubscribe();
-    };
+    return () => subscription.unsubscribe();
   }, []);
 
-  const register = async (email, password, username) => {
-    setLoading(true);
-    setMessage(null);
-    setError(null);
+  async function handleSignUp(email, password, username) {
+    setSessionLoading(true);
+    setSessionMessage(null);
+    setSessionError(null);
+
     try {
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
           data: {
-            username: username || null,
+            username: username,
             admin: false,
           },
+          emailRedirectTo: `${window.location.origin}/signin`,
         },
       });
 
-      if (error) {
-        setError(error.message || String(error));
-        return { error };
+      if (error) throw error;
+
+      if (data.user) {
+        setSessionMessage(
+          "Registration successful! Check your email to confirm your account."
+        );
+        window.location.href = "/signin";
       }
-
-      setMessage('Registro realizado! Verifique seu e-mail para confirmar.');
-      return { data };
-    } catch (err) {
-      setError(err.message || String(err));
-      return { error: err };
+    } catch (error) {
+      setSessionError(error.message);
     } finally {
-      setLoading(false);
+      setSessionLoading(false);
     }
-  };
+  }
 
-  const login = async (email, password) => {
-    setLoading(true);
-    setMessage(null);
-    setError(null);
+  async function handleSignIn(email, password) {
+    setSessionLoading(true);
+    setSessionMessage(null);
+    setSessionError(null);
+
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) {
-        setError(error.message || String(error));
-        return { error };
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) throw error;
+
+      if (data.session) {
+        setSession(data.session);
+        setSessionMessage("Sign in successful!");
       }
-      setSession(data.session || null);
-      setMessage('Login realizado!');
-      return { data };
-    } catch (err) {
-      setError(err.message || String(err));
-      return { error: err };
+    } catch (error) {
+      setSessionError(error.message);
     } finally {
-      setLoading(false);
+      setSessionLoading(false);
     }
-  };
+  }
 
-  const logout = async () => {
-    await supabase.auth.signOut();
-  };
+  async function handleSignOut() {
+    setSessionLoading(true);
+    setSessionMessage(null);
+    setSessionError(null);
 
-  const handleSignIn = async (email, password) => await login(email, password);
-  const handleSignUp = async (email, password, username) => await register(email, password, username);
+    try {
+      const { error } = await supabase.auth.signOut();
+
+      if (error) throw error;
+
+      setSession(null);
+      window.location.href = "/";
+    } catch (error) {
+      setSessionError(error.message);
+    } finally {
+      setSessionLoading(false);
+    }
+  }
+
+  const context = {
+    
+    session: session,
+    sessionLoading: sessionLoading,
+    sessionMessage: sessionMessage,
+    sessionError: sessionError,
+    handleSignUp: handleSignUp,
+    handleSignIn: handleSignIn,
+    handleSignOut: handleSignOut,
+  };
 
   return (
-    <SessionContext.Provider
-      value={{
-        session,
-        user,
-        login,
-        register,
-        logout,
-        loading: loading || loadingSession,
-        // aliases / compat
-        handleSignIn,
-        handleSignUp,
-        message,
-        error,
-      }}
-    >
+    <SessionContext.Provider value={context}>
       {children}
     </SessionContext.Provider>
   );

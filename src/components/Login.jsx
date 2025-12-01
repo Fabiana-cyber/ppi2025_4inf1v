@@ -1,6 +1,6 @@
 import styles from "./Login.module.css";
 import { useState, useEffect } from "react";
-import { useSession } from "../context/SessionContext"; // Mantendo seu hook personalizado
+import { useSession } from "../context/SessionContext";
 import { Field } from "@base-ui-components/react/field";
 import { Form } from "@base-ui-components/react/form";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
@@ -12,9 +12,9 @@ import { useNavigate } from "react-router";
 export function Login({ value }) {
   const {
     session,
-    loading, // Assumindo que seu hook mapeia sessionLoading para loading
-    message, // Assumindo que seu hook mapeia sessionMessage para message
-    error,   // Assumindo que seu hook mapeia sessionError para error
+    loading, 
+    message, 
+    error,   
     handleSignIn,
     handleSignUp,
   } = useSession();
@@ -23,7 +23,7 @@ export function Login({ value }) {
   const navigate = useNavigate();
 
 
-  // --- 1. Redirecionamento se já estiver logado ---
+  
   useEffect(() => {
     if (session) {
       navigate("/");
@@ -49,9 +49,9 @@ export function Login({ value }) {
   }, [value]);
 
 
-  // --- 2. Lógica de Toasts (Melhorada baseada no código do colega) ---
+ 
   useEffect(() => {
-    // Configurações comuns do Toast
+   
     const toastOptions = {
       position: "top-center",
       autoClose: 5000,
@@ -68,7 +68,7 @@ export function Login({ value }) {
     if (message) {
       toast.success(message, toastOptions);
     } else if (error) {
-      // Tratamento específico de erro (ex: Email não confirmado)
+     
       if (error === "Email not confirmed") {
         toast.info(error, toastOptions);
       } else {
@@ -100,7 +100,7 @@ export function Login({ value }) {
     if (Object.keys(newErrors).length > 0) return;
 
 
-    // Limpa erros anteriores antes de tentar
+   
     setErrors({});
     
     if (mode === "signin") {
@@ -110,9 +110,7 @@ export function Login({ value }) {
     }
 
 
-    // Opcional: Limpar formulário apenas se for registro ou sucesso
-    // Se der erro no login, é chato pro usuário ter que digitar tudo de novo.
-    // Mas mantive a lógica original de limpar:
+    
     setFormValues({
       email: "",
       password: "",
@@ -143,7 +141,6 @@ export function Login({ value }) {
       <Form
         className={styles.form}
         errors={errors}
-        onClearErrors={setErrors}
         onSubmit={handleSubmit}
       >
         <Field.Root name="email" className={styles.field}>
@@ -261,6 +258,7 @@ export function Login({ value }) {
     </div>
   );
 }
+
 
 
 

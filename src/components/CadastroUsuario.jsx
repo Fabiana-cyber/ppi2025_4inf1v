@@ -42,7 +42,6 @@ export function CadastroUsuario() {
       return;
     }
 
-    // sucesso
     setTimeout(() => {
       navigate("/reader");
     }, 500);

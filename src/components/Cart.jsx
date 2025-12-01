@@ -1,7 +1,6 @@
 import styles from "./Cart.module.css";
 import { useCart } from "../context/CartContext";
 import { Trash } from "lucide-react";
-import { CartDebug } from "./CartDebug";
 
 export function Cart() {
   const { cart, updateQtyCart, removeFromCart, clearCart } = useCart();
@@ -9,7 +8,6 @@ export function Cart() {
   return (
     <div className={styles.cart}>
       <h2>Shopping Cart</h2>
-      <CartDebug />
       {cart.length === 0 ? (
         <p>Your cart is empty.</p>
       ) : (

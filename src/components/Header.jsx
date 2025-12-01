@@ -1,15 +1,13 @@
-import styles from "./Header.module.css";
-import { ShoppingBasket } from "lucide-react";
-import { Link } from "react-router";
-import { useLocation } from "react-router-dom";
-import { ThemeToggle } from "./ThemeToggle";
-
 import { useCart } from "../context/CartContext";
 import { useSession } from "../context/SessionContext";
+import { useLocation, Link } from "react-router-dom";
+import styles from "./Header.module.css"; // ajuste para o nome correto
+import { ShoppingBasket } from "lucide-react";
+import { ThemeToggle } from "./ThemeToggle"; // ajuste para seu caminho real
 
 export function Header() {
-  const { cart } = useCart();    
-  const { session } = useSession(); 
+  const { cart } = useCart();
+  const { session } = useSession();
   const location = useLocation();
 
   return (
@@ -58,7 +56,8 @@ export function Header() {
               Total: $
               {cart
                 .reduce(
-                  (total, product) => total + product.price * product.quantity,
+                  (total, product) =>
+                    total + product.price * product.quantity,
                   0
                 )
                 .toFixed(2)}
@@ -69,6 +68,7 @@ export function Header() {
     </div>
   );
 }
+
 
 
 

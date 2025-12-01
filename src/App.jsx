@@ -10,7 +10,7 @@ import { Login } from "./components/Login";
 import { CadastroUsuario } from "./components/CadastroUsuario";
 import Reader from "./components/Reader";
 import { User } from "./components/User";
-import AdminProducts from "./components/Admin";
+import AdminProducts from "./components/AdminProducts";
 import { ToastContainer } from "react-toastify";
 
 function App() {
